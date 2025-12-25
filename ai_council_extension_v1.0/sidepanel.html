@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --bg-color: #0b0b0b;
+      --card-bg: #1a1a1a;
+      --text-main: #e1e1e1;
+      --text-muted: #a1a1a1;
+      --accent: #3b82f6;
+      /* Cobalt Blue */
+      --accent-hover: #2563eb;
+      --border: #333333;
+      --error: #ef4444;
+      --success: #10b981;
+      --radius: 12px;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: 'Segoe UI', Inter, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff, #999);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .status-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .status-card.active {
+      border-color: var(--accent);
+      color: var(--text-main);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .status-card.done {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #555;
+    }
+
+    .status-card.active .dot {
+      background-color: var(--accent);
+      animation: pulse 1s infinite;
+    }
+
+    .status-card.done .dot {
+      background-color: var(--success);
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea::placeholder {
+      color: #555;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    button {
+      padding: 14px;
+      border-radius: var(--radius);
+      border: none;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--text-main);
+      color: var(--bg-color);
+    }
+
+    .btn-primary:hover {
+      background-color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #252525;
+      border-color: #444;
+    }
+
+    #status {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      text-align: center;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #status.visible {
+      opacity: 1;
+    }
+
+    #status.error {
+      color: var(--error);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    #status.success {
+      color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>AI Council</h1>
+
+    <!-- Status Grid -->
+    <div class="status-grid">
+      <div class="status-card" id="status-chatgpt">
+        <div class="dot"></div> ChatGPT
+      </div>
+      <div class="status-card" id="status-gemini">
+        <div class="dot"></div> Gemini
+      </div>
+      <div class="status-card" id="status-claude">
+        <div class="dot"></div> Claude
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 1: INPUT -->
+  <div id="input-view">
+    <div class="input-group">
+      <textarea id="question" placeholder="What is your question for the council?"></textarea>
+    </div>
+
+    <div class="input-group">
+      <select id="judgePersona">
+        <option value="default">⚖️ Standard Judge</option>
+        <option value="critic">🛑 Ruthless Critic</option>
+        <option value="synthesizer">✨ Synthesizer</option>
+        <option value="coder">💻 Code Reviewer</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button id="askBtn" class="btn-primary">
+        <span>🚀</span> Deploy Agents
+      </button>
+      <button id="judgeBtn" class="btn-secondary">
+        <span>⚖️</span> Judge Results
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 2: RESULTS (Hidden by default) -->
+  <div id="results-view" style="display: none;">
+
+    <div class="verdict-card">
+      <div class="card-label">🏆 Final Verdict</div>
+      <div id="verdict-content" class="loading-text">deliberating...</div>
+    </div>
+
+    <div class="agents-list">
+      <details class="agent-card" id="card-chatgpt">
+        <summary>🤖 ChatGPT</summary>
+        <div class="card-body">...</div>
+      </details>
+      <details class="agent-card" id="card-gemini">
+        <summary>🌟 Gemini</summary>
+        <div class="card-body">...</div>
+      </details>
+      <details class="agent-card" id="card-claude">
+        <summary>🧠 Claude</summary>
+        <div class="card-body">...</div>
+      </details>
+    </div>
+
+    <button id="resetBtn" class="btn-outline">
+      🔄 New Question
+    </button>
+  </div>
+
+  <div id="status">Ready</div>
+  <script src="sidepanel.js"></script>
+</body>
+
+</html>

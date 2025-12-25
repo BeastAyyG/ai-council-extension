@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Council Chamber</title>
+    <style>
+        :root {
+            --bg: #0b0b0b;
+            --card-bg: #1a1a1a;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #333;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --font: 'Segoe UI', Inter, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        .council-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+            /* Scroll inside cards */
+        }
+
+        .agent-column {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .agent-column:hover {
+            border-color: #444;
+        }
+
+        .column-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+        }
+
+        .agent-column[data-name="ChatGPT"] .dot {
+            background-color: #10a37f;
+        }
+
+        .agent-column[data-name="Gemini"] .dot {
+            background-color: #4facfe;
+        }
+
+        .agent-column[data-name="Claude"] .dot {
+            background-color: #d97757;
+        }
+
+        .column-content {
+            padding: 20px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            color: #d1d5db;
+        }
+
+        .verdict-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            min-height: 150px;
+            position: relative;
+        }
+
+        .verdict-label {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--bg);
+            padding: 0 10px;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #verdict-text {
+            line-height: 1.6;
+        }
+
+        .loading-pulse {
+            animation: pulse-text 2s infinite;
+            color: var(--text-muted);
+        }
+
+        @keyframes pulse-text {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Council Chamber</h1>
+
+    <div class="council-grid">
+        <div class="agent-column" data-name="ChatGPT">
+            <div class="column-header">
+                <div class="dot"></div> ChatGPT 4o
+            </div>
+            <div class="column-content" id="col-chatgpt">...</div>
+        </div>
+        <div class="agent-column" data-name="Gemini">
+            <div class="column-header">
+                <div class="dot"></div> Gemini 1.5
+            </div>
+            <div class="column-content" id="col-gemini">...</div>
+        </div>
+        <div class="agent-column" data-name="Claude">
+            <div class="column-header">
+                <div class="dot"></div> Claude 3.5
+            </div>
+            <div class="column-content" id="col-claude">...</div>
+        </div>
+    </div>
+
+    <div class="verdict-section">
+        <div class="verdict-label">Final Verdict</div>
+        <div id="verdict-text" class="loading-pulse">Waiting for the Council's decision...</div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
